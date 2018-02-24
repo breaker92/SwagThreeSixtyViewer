@@ -124,24 +124,24 @@ class SwagThreeSixtyViewer extends Plugin
 
     public function onDetailPostDispatch(\Enlight_Event_EventArgs $args)
     {
-        $modelService = $this->container->get('swag_three_sixty.model_service');
+        /** @var \Shopware_Controllers_Frontend_Detail $controller */
         $controller = $args->getSubject();
         $view = $controller->View();
 
         $product = $view->sArticle;
-        if (!isset($product['swagthreesixty']) || empty($product['swagthreesixty'])) {
-            return;
-        }
 
-        $this->container->get('template')->addTemplateDir(
+        $view->addTemplateDir(
             $this->getPath() . '/Resources/views/'
         );
 
-        $model = $modelService->detail((int) $product['swagthreesixty']);
+        if(key_exists('swagthreesixty', $product) && !empty($product['swagthreesixty'])) {
+            $modelService = $this->container->get('swag_three_sixty.model_service');
+            $model = $modelService->detail((int) $product['swagthreesixty']);
+            $view->assign([
+                'sThreeSixtyModel' => $model
+            ]);
+        }
 
-        $view->assign([
-            'sThreeSixtyModel' => $model
-        ]);
     }
 
     public function onAddJavascriptFiles()
